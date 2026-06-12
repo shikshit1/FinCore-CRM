@@ -1,8 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { connectDB } from './config/database.js';
 import { errorHandler } from './middleware/errorHandler.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
@@ -12,6 +16,10 @@ import loanRoutes from './routes/loanRoutes.js';
 import bankRoutes from './routes/bankRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import callRoutes from './routes/callRoutes.js';
+import portalRoutes from './routes/portalRoutes.js';
+import leadRoutes from './routes/leadRoutes.js';
 
 dotenv.config();
 
@@ -24,8 +32,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Database connection
+
 connectDB();
 
 // Health check
@@ -41,6 +50,10 @@ app.use('/api/loans', loanRoutes);
 app.use('/api/banks', bankRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/calls', callRoutes);
+app.use('/api/portal', portalRoutes);
+app.use('/api/leads', leadRoutes);
 
 // 404 handler
 app.use((req, res) => {

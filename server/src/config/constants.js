@@ -24,7 +24,6 @@ export const LOAN_STATUS = {
 export const CUSTOMER_STATUS = {
   ACTIVE: 'active',
   INACTIVE: 'inactive',
-  BLACKLISTED: 'blacklisted',
 };
 
 export const TASK_STATUS = {

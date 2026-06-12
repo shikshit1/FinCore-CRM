@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { customerService } from '../services/apiService';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import Modal from '../components/ui/Modal';
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 
@@ -100,8 +101,8 @@ export default function Customers() {
 
   const getStatusColor = (status) => {
     const colors = {
-      active: 'bg-green-100 text-green-800',
-      inactive: 'bg-gray-100 text-gray-800',
+      active: 'bg-green-100 dark:bg-green-950/50 text-green-800 dark:text-green-300',
+      inactive: 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200',
       pending: 'bg-yellow-100 text-yellow-800',
     };
     return colors[status] || 'bg-blue-100 text-blue-800';
@@ -113,11 +114,11 @@ export default function Customers() {
       pending: 'bg-yellow-50 text-yellow-700',
       rejected: 'bg-red-50 text-red-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-gray-50 text-gray-700 dark:text-slate-300';
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="fincore-page">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
@@ -126,8 +127,8 @@ export default function Customers() {
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">Customers</h1>
-                <p className="text-gray-500 mt-1">Manage customer and lead information</p>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Customers</h1>
+                <p className="text-gray-500 dark:text-slate-400 mt-1">Manage customer and lead information</p>
               </div>
               <button
                 onClick={() => setShowForm(true)}
@@ -149,7 +150,7 @@ export default function Customers() {
 
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex justify-between items-center">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 rounded-lg flex justify-between items-center">
                 <span>{error}</span>
                 <button onClick={() => setError(null)}>
                   <X size={18} />
@@ -157,25 +158,14 @@ export default function Customers() {
               </div>
             )}
 
-            {/* Add Customer Form Modal */}
-            {showForm && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">Add New Customer</h2>
-                    <button
-                      onClick={() => {
-                        setShowForm(false);
-                        setFormError(null);
-                      }}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
-
-                  {formError && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <Modal
+              isOpen={showForm}
+              onClose={() => { setShowForm(false); setFormError(null); }}
+              title="Add New Customer"
+              size="md"
+            >
+              {formError && (
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 rounded-lg text-sm">
                       {formError}
                     </div>
                   )}
@@ -254,14 +244,12 @@ export default function Customers() {
                         setShowForm(false);
                         setFormError(null);
                       }}
-                      className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-3 rounded-lg transition duration-200 font-medium"
+                      className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 dark:text-slate-100 px-4 py-3 rounded-lg transition duration-200 font-medium"
                     >
                       Cancel
                     </button>
                   </div>
-                </div>
-              </div>
-            )}
+            </Modal>
 
             {/* Search */}
             <div className="mb-6 flex gap-4">
@@ -273,42 +261,42 @@ export default function Customers() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             {/* Table */}
             {loading ? (
-              <div className="bg-white rounded-lg shadow p-8 text-center">
+              <div className="fincore-card p-8 text-center">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-4 text-gray-600">Loading customers...</p>
+                <p className="mt-4 text-gray-600 dark:text-slate-400">Loading customers...</p>
               </div>
             ) : customers.length === 0 ? (
-              <div className="bg-white rounded-lg shadow p-8 text-center">
-                <p className="text-gray-600 text-lg">No customers found</p>
+              <div className="fincore-card p-8 text-center">
+                <p className="text-gray-600 dark:text-slate-400 text-lg">No customers found</p>
                 <p className="text-gray-400 mt-2">Start by adding your first customer</p>
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="fincore-card overflow-hidden">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="bg-gray-50 dark:bg-slate-800/80 border-b dark:border-slate-700 border-gray-200">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Email</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Phone</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">KYC Status</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Name</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Email</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Phone</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">KYC Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-slate-800">
                     {customers.map((customer) => (
-                      <tr key={customer._id} className="hover:bg-gray-50 transition">
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <tr key={customer._id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-slate-100">
                           {customer.firstName} {customer.lastName}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{customer.email}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{customer.phone}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{customer.email}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{customer.phone}</td>
                         <td className="px-6 py-4 text-sm">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${getKycColor(customer.kycStatus)}`}>
                             {customer.kycStatus || 'pending'}

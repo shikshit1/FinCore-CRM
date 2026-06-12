@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { LOAN_STATUSES } from '../config/loanStatuses.js';
 
 const loanApplicationSchema = new mongoose.Schema({
   applicationNumber: {
@@ -32,7 +33,7 @@ const loanApplicationSchema = new mongoose.Schema({
   purpose: String,
   status: {
     type: String,
-    enum: ['pending', 'submitted', 'approved', 'rejected', 'disbursed', 'completed'],
+    enum: LOAN_STATUSES,
     default: 'pending',
   },
   bank: {
@@ -61,15 +62,32 @@ const loanApplicationSchema = new mongoose.Schema({
   comments: String,
   timeline: [
     {
+      action: { type: String, default: 'status_change' },
       status: String,
-      date: Date,
+      previousStatus: String,
+      date: { type: Date, default: Date.now },
       remarks: String,
+      notificationSent: { type: Boolean, default: false },
       updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
       },
     },
   ],
+  statusHistory: [
+    {
+      fromStatus: String,
+      toStatus: String,
+      remarks: String,
+      notificationSent: { type: Boolean, default: false },
+      updatedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+      updatedAt: { type: Date, default: Date.now },
+    },
+  ],
+  lastWhatsAppAt: Date,
   createdAt: {
     type: Date,
     default: Date.now,
@@ -80,7 +98,6 @@ const loanApplicationSchema = new mongoose.Schema({
   },
 });
 
-// Generate application number
 loanApplicationSchema.pre('save', async function (next) {
   if (this.isNew && !this.applicationNumber) {
     const count = await mongoose.model('LoanApplication').countDocuments();

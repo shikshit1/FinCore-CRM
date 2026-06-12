@@ -6,9 +6,13 @@ const bankSchema = new mongoose.Schema({
     required: [true, 'Bank name is required'],
     unique: true,
   },
+  code: {
+    type: String,
+    trim: true,
+  },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Email is required'],
   },
   phone: String,
   address: {

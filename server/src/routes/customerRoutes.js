@@ -1,11 +1,11 @@
 import express from 'express';
 import * as customerController from '../controllers/customerController.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, authorizeStaff } from '../middleware/auth.js';
 import { validateCustomer, handleValidationErrors } from '../utils/validators.js';
 
 const router = express.Router();
 
-router.use(authenticateToken);
+router.use(authenticateToken, authorizeStaff);
 
 router.get('/', customerController.getAllCustomers);
 router.post('/', validateCustomer, handleValidationErrors, customerController.createCustomer);

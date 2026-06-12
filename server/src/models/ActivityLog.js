@@ -12,7 +12,7 @@ const activityLogSchema = new mongoose.Schema({
   },
   entityType: {
     type: String,
-    enum: ['User', 'Customer', 'LoanApplication', 'Bank', 'Task', 'Document'],
+    enum: ['User', 'Customer', 'LoanApplication', 'Bank', 'Task', 'Document', 'Lead'],
   },
   entityId: mongoose.Schema.Types.ObjectId,
   oldValues: mongoose.Schema.Types.Mixed,

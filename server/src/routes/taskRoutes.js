@@ -1,10 +1,10 @@
 import express from 'express';
 import * as taskController from '../controllers/taskController.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, authorizeStaff } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.use(authenticateToken);
+router.use(authenticateToken, authorizeStaff);
 
 router.get('/', taskController.getAllTasks);
 router.post('/', taskController.createTask);

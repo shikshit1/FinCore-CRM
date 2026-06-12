@@ -1,121 +1,236 @@
 import { useState } from 'react';
+
 import { useNavigate, Link } from 'react-router-dom';
+
 import { useAuth } from '../context/AuthContext';
 
+import { getHomePath } from '../utils/roles';
+
+import { User, Mail, Phone, ArrowRight, Loader2 } from 'lucide-react';
+
+import AuthLayout from '../components/auth/AuthLayout';
+
+import AuthInput from '../components/auth/AuthInput';
+
+import PasswordInput from '../components/auth/PasswordInput';
+
+
+
 export default function Register() {
+
   const [formData, setFormData] = useState({
+
     name: '',
+
     email: '',
+
     phone: '',
+
     password: '',
+
   });
+
   const [error, setError] = useState('');
+
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+
+  const { registerCustomer } = useAuth();
+
   const navigate = useNavigate();
 
+
+
   const handleChange = (e) => {
+
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
   };
 
+
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
+
     setError('');
+
+
+
+    if (!formData.phone?.trim()) {
+
+      setError('Phone number is required');
+
+      return;
+
+    }
+
+
+
     setLoading(true);
 
     try {
-      const success = await register(formData.name, formData.email, formData.password, formData.phone);
-      if (success) {
-        navigate('/dashboard');
+
+      const result = await registerCustomer(
+
+        formData.name,
+
+        formData.email,
+
+        formData.password,
+
+        formData.phone
+
+      );
+
+
+
+      if (result.user) {
+
+        navigate(getHomePath(result.user));
+
       } else {
-        setError('Registration failed');
+
+        setError(result.error || 'Registration failed');
+
       }
+
     } catch (err) {
+
       setError(err.message || 'Registration failed');
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
+
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
-          <p className="text-gray-600 mt-2">Join FinCore CRM</p>
+
+    <AuthLayout
+
+      title="Create customer account"
+
+      subtitle="Register for the FinCore Customer Portal to track loans and documents"
+
+    >
+
+      {error && (
+
+        <div className="mb-5 p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900/50 text-red-700 dark:text-red-300 text-sm rounded-xl">
+
+          {error}
+
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Full Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Phone</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <AuthInput label="Full Name" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" icon={User} required />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition"
-          >
-            {loading ? 'Creating account...' : 'Register'}
-          </button>
-        </form>
+        <AuthInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@email.com" icon={Mail} required />
 
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <AuthInput
+
+          label="Phone"
+
+          name="phone"
+
+          type="tel"
+
+          value={formData.phone}
+
+          onChange={handleChange}
+
+          placeholder="9876543210"
+
+          icon={Phone}
+
+          required
+
+        />
+
+        <PasswordInput value={formData.password} onChange={handleChange} placeholder="Create a strong password" autoComplete="new-password" />
+
+
+
+        <button
+
+          type="submit"
+
+          disabled={loading}
+
+          className="group w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3.5 rounded-xl font-semibold shadow-lg disabled:opacity-60 transition mt-2"
+
+        >
+
+          {loading ? (
+
+            <>
+
+              <Loader2 className="w-5 h-5 animate-spin" /> Creating account...
+
+            </>
+
+          ) : (
+
+            <>
+
+              Create customer account <ArrowRight className="w-5 h-5" />
+
+            </>
+
+          )}
+
+        </button>
+
+      </form>
+
+
+
+      <p className="mt-4 text-xs text-center text-gray-500 dark:text-slate-400">
+
+        Need CRM access? Contact your FinCore administrator — employee accounts cannot be created here.
+
+      </p>
+
+
+
+      <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-700 text-center text-sm text-gray-600 dark:text-slate-400 space-y-2">
+
+        <p>
+
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline font-semibold">
-            Login here
+
+          <Link to="/login" className="font-semibold text-blue-600 dark:text-blue-400">
+
+            Sign in
+
           </Link>
-        </div>
+
+        </p>
+
+        <p>
+
+          <Link to="/" className="text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400">
+
+            ← Back to public website
+
+          </Link>
+
+        </p>
+
       </div>
-    </div>
+
+    </AuthLayout>
+
   );
+
 }
+

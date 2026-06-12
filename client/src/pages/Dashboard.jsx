@@ -3,7 +3,8 @@ import { dashboardService } from '../services/apiService';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import StatCard from '../components/StatCard';
-import { TrendingUp, Users, FileText, DollarSign, ArrowUpRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { TrendingUp, Users, FileText, DollarSign, ArrowUpRight, UserPlus } from 'lucide-react';
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -33,14 +34,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-50">
+      <div className="fincore-page">
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-              <p className="text-gray-600 text-lg">Loading dashboard...</p>
+              <p className="text-gray-600 dark:text-slate-400 text-lg">Loading dashboard...</p>
             </div>
           </div>
         </div>
@@ -49,7 +50,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="fincore-page">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
@@ -57,12 +58,12 @@ export default function Dashboard() {
           <div className="p-8">
             {/* Page Header */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-500 mt-1">Welcome back! Here's your business overview.</p>
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Dashboard</h1>
+              <p className="text-gray-500 dark:text-slate-400 mt-1">Welcome back! Here's your business overview.</p>
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 rounded-lg">
                 {error}
               </div>
             )}
@@ -71,7 +72,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {stats && (
                 <>
-                  <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+                  <div className="fincore-card hover:shadow-lg transition p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="bg-blue-100 p-3 rounded-lg">
                         <Users className="w-6 h-6 text-blue-600" />
@@ -80,11 +81,11 @@ export default function Dashboard() {
                         <ArrowUpRight size={14} /> 12%
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm mb-1">Total Customers</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.totalCustomers || 0}</p>
+                    <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Total Customers</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{stats.totalCustomers || 0}</p>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+                  <div className="fincore-card hover:shadow-lg transition p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="bg-green-100 p-3 rounded-lg">
                         <TrendingUp className="w-6 h-6 text-green-600" />
@@ -93,11 +94,11 @@ export default function Dashboard() {
                         <ArrowUpRight size={14} /> 8%
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm mb-1">Active Customers</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.activeCustomers || 0}</p>
+                    <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Active Customers</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{stats.activeCustomers || 0}</p>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+                  <div className="fincore-card hover:shadow-lg transition p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="bg-purple-100 p-3 rounded-lg">
                         <FileText className="w-6 h-6 text-purple-600" />
@@ -106,11 +107,26 @@ export default function Dashboard() {
                         <ArrowUpRight size={14} /> 15%
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm mb-1">Total Loans</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.totalLoans || 0}</p>
+                    <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Total Loans</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{stats.totalLoans || 0}</p>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+                  <Link to="/leads" className="fincore-card hover:shadow-lg transition p-6 block">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="bg-orange-100 dark:bg-orange-950/50 p-3 rounded-lg">
+                        <UserPlus className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                      </div>
+                      {(stats.newLeads || 0) > 0 && (
+                        <span className="text-orange-600 dark:text-orange-400 text-sm font-medium">
+                          {stats.newLeads} new
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Website Leads</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{stats.totalLeads || 0}</p>
+                  </Link>
+
+                  <div className="fincore-card hover:shadow-lg transition p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="bg-indigo-100 p-3 rounded-lg">
                         <DollarSign className="w-6 h-6 text-indigo-600" />
@@ -119,8 +135,8 @@ export default function Dashboard() {
                         <ArrowUpRight size={14} /> 20%
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm mb-1">Approved Loans</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.approvedLoans || 0}</p>
+                    <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Approved Loans</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{stats.approvedLoans || 0}</p>
                   </div>
                 </>
               )}
@@ -129,8 +145,8 @@ export default function Dashboard() {
             {/* Charts and Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
               {/* Loans by Status */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Loan Status Distribution</h2>
+              <div className="fincore-card p-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-6">Loan Status Distribution</h2>
                 {breakdown?.loansByStatus && breakdown.loansByStatus.length > 0 ? (
                   <div className="space-y-4">
                     {breakdown.loansByStatus.map((item) => {
@@ -146,8 +162,8 @@ export default function Dashboard() {
                       return (
                         <div key={item._id}>
                           <div className="flex justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700 capitalize">{item._id}</span>
-                            <span className="text-sm font-bold text-gray-900">{item.count} ({percentage}%)</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-slate-300 capitalize">{item._id}</span>
+                            <span className="text-sm font-bold text-gray-900 dark:text-slate-100">{item.count} ({percentage}%)</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
@@ -160,13 +176,13 @@ export default function Dashboard() {
                     })}
                   </div>
                 ) : (
-                  <p className="text-gray-500">No loan data available</p>
+                  <p className="text-gray-500 dark:text-slate-400">No loan data available</p>
                 )}
               </div>
 
               {/* Loans by Type */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Loans by Type</h2>
+              <div className="fincore-card p-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-6">Loans by Type</h2>
                 {breakdown?.loansByType && breakdown.loansByType.length > 0 ? (
                   <div className="space-y-4">
                     {breakdown.loansByType.map((item) => {
@@ -183,8 +199,8 @@ export default function Dashboard() {
                       return (
                         <div key={item._id}>
                           <div className="flex justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700 capitalize">{item._id || 'Other'}</span>
-                            <span className="text-sm font-bold text-gray-900">{item.count} ({percentage}%)</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-slate-300 capitalize">{item._id || 'Other'}</span>
+                            <span className="text-sm font-bold text-gray-900 dark:text-slate-100">{item.count} ({percentage}%)</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
@@ -197,26 +213,26 @@ export default function Dashboard() {
                     })}
                   </div>
                 ) : (
-                  <p className="text-gray-500">No loan type data available</p>
+                  <p className="text-gray-500 dark:text-slate-400">No loan type data available</p>
                 )}
               </div>
             </div>
 
             {/* Recent Activity / Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-600 text-sm mb-2">Monthly Active Customers</p>
-                <p className="text-3xl font-bold text-gray-900">{Math.floor((stats?.activeCustomers || 0) * 0.8)}</p>
+              <div className="fincore-card p-6">
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Monthly Active Customers</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{Math.floor((stats?.activeCustomers || 0) * 0.8)}</p>
                 <p className="text-green-600 text-xs mt-2">↑ 5% from last month</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-600 text-sm mb-2">Average Loan Amount</p>
-                <p className="text-3xl font-bold text-gray-900">₹3.5L</p>
+              <div className="fincore-card p-6">
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Average Loan Amount</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">₹3.5L</p>
                 <p className="text-green-600 text-xs mt-2">↑ 8% from last month</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-600 text-sm mb-2">Approval Rate</p>
-                <p className="text-3xl font-bold text-gray-900">78%</p>
+              <div className="fincore-card p-6">
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Approval Rate</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">78%</p>
                 <p className="text-green-600 text-xs mt-2">↑ 5% improvement</p>
               </div>
             </div>

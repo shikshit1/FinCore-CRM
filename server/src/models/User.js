@@ -27,8 +27,12 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'manager', 'employee'],
+    enum: ['admin', 'manager', 'employee', 'customer'],
     default: 'employee',
+  },
+  customerProfile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
   },
   department: String,
   avatar: String,
@@ -45,6 +49,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+// Omit empty optional phone so validators do not fail on ""
+userSchema.pre('save', function (next) {
+  if (this.phone !== undefined && !String(this.phone).trim()) {
+    this.phone = undefined;
+  }
+  next();
 });
 
 // Hash password before saving

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { callService } from '../services/apiService';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import Modal from '../components/ui/Modal';
 import { Phone, Plus, X, Clock, TrendingUp, Users, CheckCircle } from 'lucide-react';
 
 export default function CallTracking() {
@@ -22,85 +23,39 @@ export default function CallTracking() {
     notes: '',
   });
 
-  // Mock analytics data
-  const analytics = {
-    totalCalls: 127,
-    connectedCalls: 89,
-    connectionRatio: '70%',
-    leadsGenerated: 34,
-    conversionRatio: '38%',
-    avgDuration: '4:23',
-    followupsPending: 12,
-  };
-
-  // Mock call logs
-  const mockCalls = [
-    {
-      _id: '1',
-      telecallerName: 'Rajesh Kumar',
-      customerName: 'Amit Sharma',
-      phoneNumber: '9876543210',
-      callStatus: 'connected',
-      duration: '6:45',
-      leadGenerated: true,
-      followUpDate: '2026-05-25',
-      notes: 'Interested in personal loan',
-    },
-    {
-      _id: '2',
-      telecallerName: 'Priya Singh',
-      customerName: 'Neha Patel',
-      phoneNumber: '9123456789',
-      callStatus: 'not-connected',
-      duration: '0:30',
-      leadGenerated: false,
-      followUpDate: '2026-05-22',
-      notes: 'Line busy, will retry',
-    },
-    {
-      _id: '3',
-      telecallerName: 'Vikram Patel',
-      customerName: 'Sanjay Verma',
-      phoneNumber: '8765432109',
-      callStatus: 'interested',
-      duration: '8:12',
-      leadGenerated: true,
-      followUpDate: '2026-05-27',
-      notes: 'Ready to apply for home loan',
-    },
-    {
-      _id: '4',
-      telecallerName: 'Rajesh Kumar',
-      customerName: 'Karan Singh',
-      phoneNumber: '9999888777',
-      callStatus: 'not-interested',
-      duration: '2:15',
-      leadGenerated: false,
-      followUpDate: null,
-      notes: 'Not interested in any offers',
-    },
-    {
-      _id: '5',
-      telecallerName: 'Priya Singh',
-      customerName: 'Divya Sharma',
-      phoneNumber: '9111222333',
-      callStatus: 'follow-up-required',
-      duration: '4:50',
-      leadGenerated: true,
-      followUpDate: '2026-05-23',
-      notes: 'Needs more information about loan terms',
-    },
-  ];
+  const [analytics, setAnalytics] = useState({
+    totalCalls: 0,
+    connectedCalls: 0,
+    connectionRatio: '0%',
+    leadsGenerated: 0,
+    conversionRatio: '0%',
+    avgDuration: '0:00',
+    followupsPending: 0,
+  });
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchCalls();
-  }, []);
+    fetchAnalytics();
+  }, [filterStatus, search]);
+
+  const fetchAnalytics = async () => {
+    try {
+      const data = await callService.getAnalytics();
+      setAnalytics(data);
+    } catch (err) {
+      console.error('Analytics error:', err);
+    }
+  };
 
   const fetchCalls = async () => {
     try {
       setLoading(true);
-      // For now use mock data, in production this would call the API
-      setCalls(mockCalls);
+      const params = {};
+      if (filterStatus !== 'all') params.status = filterStatus;
+      if (search) params.search = search;
+      const data = await callService.getAll(params);
+      setCalls(data.calls || []);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -126,12 +81,11 @@ export default function CallTracking() {
     }
 
     try {
-      // For now, just add to local state
-      const newCall = {
-        _id: Date.now().toString(),
+      const payload = {
         ...formData,
+        followUpDate: formData.followUpDate || undefined,
       };
-      setCalls([newCall, ...calls]);
+      await callService.create(payload);
       setSuccess('Call log added successfully!');
       setFormData({
         telecallerName: '',
@@ -144,6 +98,8 @@ export default function CallTracking() {
         notes: '',
       });
       setShowForm(false);
+      await fetchCalls();
+      await fetchAnalytics();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);
@@ -153,15 +109,15 @@ export default function CallTracking() {
 
   const getStatusColor = (status) => {
     const colors = {
-      'connected': 'bg-green-100 text-green-800',
+      'connected': 'bg-green-100 dark:bg-green-950/50 text-green-800 dark:text-green-300',
       'not-connected': 'bg-red-100 text-red-800',
       'busy': 'bg-yellow-100 text-yellow-800',
-      'switched-off': 'bg-gray-100 text-gray-800',
+      'switched-off': 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200',
       'interested': 'bg-blue-100 text-blue-800',
       'not-interested': 'bg-red-100 text-red-800',
       'follow-up-required': 'bg-orange-100 text-orange-800',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200';
   };
 
   const getStatusDisplay = (status) => {
@@ -182,7 +138,7 @@ export default function CallTracking() {
     : calls.filter(call => call.callStatus === filterStatus);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="fincore-page">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
@@ -191,8 +147,8 @@ export default function CallTracking() {
             {/* Page Header */}
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">Call Tracking</h1>
-                <p className="text-gray-500 mt-1">Monitor telecaller performance and lead generation</p>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Call Tracking</h1>
+                <p className="text-gray-500 dark:text-slate-400 mt-1">Monitor telecaller performance and lead generation</p>
               </div>
               <button
                 onClick={() => setShowForm(!showForm)}
@@ -213,7 +169,7 @@ export default function CallTracking() {
             )}
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex justify-between items-center">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 rounded-lg flex justify-between items-center">
                 <span>{error}</span>
                 <button onClick={() => setError(null)} className="text-red-700 hover:text-red-900">
                   <X size={20} />
@@ -221,24 +177,11 @@ export default function CallTracking() {
               </div>
             )}
 
-            {/* Add Call Form Modal */}
-            {showForm && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">Log Call</h2>
-                    <button
-                      onClick={() => setShowForm(false)}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="space-y-4">
+            <Modal isOpen={showForm} onClose={() => setShowForm(false)} title="Log Call" size="xl">
+              <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           Telecaller Name *
                         </label>
                         <input
@@ -247,12 +190,12 @@ export default function CallTracking() {
                           required
                           value={formData.telecallerName}
                           onChange={handleInputChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="e.g., Rajesh Kumar"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           Customer Name *
                         </label>
                         <input
@@ -261,7 +204,7 @@ export default function CallTracking() {
                           required
                           value={formData.customerName}
                           onChange={handleInputChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="e.g., Amit Sharma"
                         />
                       </div>
@@ -269,7 +212,7 @@ export default function CallTracking() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           Phone Number *
                         </label>
                         <input
@@ -278,19 +221,19 @@ export default function CallTracking() {
                           required
                           value={formData.phoneNumber}
                           onChange={handleInputChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="9876543210"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           Call Status *
                         </label>
                         <select
                           name="callStatus"
                           value={formData.callStatus}
                           onChange={handleInputChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="connected">Connected</option>
                           <option value="not-connected">Not Connected</option>
@@ -305,7 +248,7 @@ export default function CallTracking() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           Duration (mm:ss)
                         </label>
                         <input
@@ -313,12 +256,12 @@ export default function CallTracking() {
                           name="duration"
                           value={formData.duration}
                           onChange={handleInputChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="5:30"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           Follow-up Date
                         </label>
                         <input
@@ -326,7 +269,7 @@ export default function CallTracking() {
                           name="followUpDate"
                           value={formData.followUpDate}
                           onChange={handleInputChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
@@ -339,18 +282,18 @@ export default function CallTracking() {
                         onChange={handleInputChange}
                         className="w-4 h-4 text-blue-600 rounded"
                       />
-                      <span className="ml-3 font-medium text-gray-700">Lead Generated</span>
+                      <span className="ml-3 font-medium text-gray-700 dark:text-slate-300">Lead Generated</span>
                     </label>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                         Notes
                       </label>
                       <textarea
                         name="notes"
                         value={formData.notes}
                         onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Call details and observations..."
                         rows="3"
                       ></textarea>
@@ -366,71 +309,89 @@ export default function CallTracking() {
                       <button
                         type="button"
                         onClick={() => setShowForm(false)}
-                        className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-2 rounded-lg transition font-medium"
+                        className="flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 px-6 py-2 rounded-lg transition font-medium"
                       >
                         Cancel
                       </button>
                     </div>
                   </form>
-                </div>
-              </div>
-            )}
+            </Modal>
 
             {/* Analytics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+              <div className="fincore-card hover:shadow-lg transition p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="bg-blue-100 p-3 rounded-lg">
                     <Phone className="w-6 h-6 text-blue-600" />
                   </div>
                   <span className="text-blue-600 text-sm font-medium">Total</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-1">Total Calls</p>
-                <p className="text-3xl font-bold text-gray-900">{analytics.totalCalls}</p>
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Total Calls</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{analytics.totalCalls}</p>
               </div>
 
-              <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+              <div className="fincore-card hover:shadow-lg transition p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="bg-green-100 p-3 rounded-lg">
                     <CheckCircle className="w-6 h-6 text-green-600" />
                   </div>
                   <span className="text-green-600 text-sm font-medium">{analytics.connectionRatio}</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-1">Connected Calls</p>
-                <p className="text-3xl font-bold text-gray-900">{analytics.connectedCalls}</p>
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Connected Calls</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{analytics.connectedCalls}</p>
               </div>
 
-              <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+              <div className="fincore-card hover:shadow-lg transition p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="bg-purple-100 p-3 rounded-lg">
                     <TrendingUp className="w-6 h-6 text-purple-600" />
                   </div>
                   <span className="text-purple-600 text-sm font-medium">{analytics.conversionRatio}</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-1">Leads Generated</p>
-                <p className="text-3xl font-bold text-gray-900">{analytics.leadsGenerated}</p>
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Leads Generated</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{analytics.leadsGenerated}</p>
               </div>
 
-              <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+              <div className="fincore-card hover:shadow-lg transition p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="bg-orange-100 p-3 rounded-lg">
                     <Clock className="w-6 h-6 text-orange-600" />
                   </div>
                   <span className="text-orange-600 text-sm font-medium">Avg</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-1">Avg Duration</p>
-                <p className="text-3xl font-bold text-gray-900">{analytics.avgDuration}</p>
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-1">Avg Duration</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{analytics.avgDuration}</p>
+              </div>
+            </div>
+
+            {/* Search & Extra Analytics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="fincore-card p-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">Follow-ups Pending</p>
+                  <p className="text-2xl font-bold text-orange-600">{analytics.followupsPending}</p>
+                </div>
+                <Users className="w-8 h-8 text-orange-400" />
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search by customer, telecaller, or phone..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-4 pr-4 py-2.5 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                />
               </div>
             </div>
 
             {/* Filter */}
-            <div className="mb-6 flex gap-2">
+            <div className="mb-6 flex flex-wrap gap-2">
               <button
                 onClick={() => setFilterStatus('all')}
                 className={`px-4 py-2 rounded-lg transition font-medium ${
                   filterStatus === 'all'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
                 }`}
               >
                 All Calls
@@ -440,7 +401,7 @@ export default function CallTracking() {
                 className={`px-4 py-2 rounded-lg transition font-medium ${
                   filterStatus === 'connected'
                     ? 'bg-green-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
                 }`}
               >
                 Connected
@@ -450,7 +411,7 @@ export default function CallTracking() {
                 className={`px-4 py-2 rounded-lg transition font-medium ${
                   filterStatus === 'interested'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
                 }`}
               >
                 Interested
@@ -460,7 +421,7 @@ export default function CallTracking() {
                 className={`px-4 py-2 rounded-lg transition font-medium ${
                   filterStatus === 'follow-up-required'
                     ? 'bg-orange-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
                 }`}
               >
                 Follow-up
@@ -469,50 +430,50 @@ export default function CallTracking() {
 
             {/* Call Logs Table */}
             {loading ? (
-              <div className="bg-white rounded-lg shadow p-8 text-center">
+              <div className="fincore-card p-8 text-center">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-4 text-gray-600">Loading call logs...</p>
+                <p className="mt-4 text-gray-600 dark:text-slate-400">Loading call logs...</p>
               </div>
             ) : filteredCalls.length === 0 ? (
-              <div className="bg-white rounded-lg shadow p-8 text-center">
+              <div className="fincore-card p-8 text-center">
                 <Phone className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 text-lg">No calls found</p>
+                <p className="text-gray-600 dark:text-slate-400 text-lg">No calls found</p>
                 <p className="text-gray-400 mt-2">Start logging calls to track performance</p>
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="fincore-card overflow-hidden">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-gray-50 dark:bg-slate-800/80 border-b dark:border-slate-700">
                     <tr>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Telecaller</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Customer</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Phone</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Duration</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Lead</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Follow-up</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Telecaller</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Customer</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Phone</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Status</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Duration</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Lead</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Follow-up</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredCalls.map((call) => (
-                      <tr key={call._id} className="border-b hover:bg-gray-50 transition">
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{call.telecallerName}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{call.customerName}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{call.phoneNumber}</td>
+                      <tr key={call._id} className="border-b hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-slate-100">{call.telecallerName}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{call.customerName}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{call.phoneNumber}</td>
                         <td className="px-6 py-4 text-sm">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(call.callStatus)}`}>
                             {getStatusDisplay(call.callStatus)}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{call.duration || '-'}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{call.duration || '-'}</td>
                         <td className="px-6 py-4 text-sm">
                           {call.leadGenerated ? (
-                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Yes</span>
+                            <span className="bg-green-100 dark:bg-green-950/50 text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-xs font-medium">Yes</span>
                           ) : (
-                            <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium">No</span>
+                            <span className="bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200 px-3 py-1 rounded-full text-xs font-medium">No</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">
                           {call.followUpDate ? new Date(call.followUpDate).toLocaleDateString() : '-'}
                         </td>
                       </tr>

@@ -1,5 +1,12 @@
 import Customer from '../models/Customer.js';
+import LoanApplication from '../models/LoanApplication.js';
+import Task from '../models/Task.js';
 import ActivityLog from '../models/ActivityLog.js';
+
+const CUSTOMER_STATUSES = ['active', 'inactive'];
+
+const normalizeCustomerStatus = (status) =>
+  CUSTOMER_STATUSES.includes(status) ? status : 'active';
 
 export const getAllCustomers = async (req, res) => {
   try {
@@ -7,7 +14,9 @@ export const getAllCustomers = async (req, res) => {
     const skip = (page - 1) * limit;
 
     let query = {};
-    if (status) query.status = status;
+    if (status && status !== 'all' && String(status).trim() !== '') {
+      query.status = status;
+    }
     if (search) {
       query.$or = [
         { firstName: { $regex: search, $options: 'i' } },
@@ -24,8 +33,14 @@ export const getAllCustomers = async (req, res) => {
 
     const total = await Customer.countDocuments(query);
 
+    const normalizedCustomers = customers.map((c) => {
+      const obj = c.toObject();
+      obj.status = normalizeCustomerStatus(obj.status);
+      return obj;
+    });
+
     res.json({
-      customers,
+      customers: normalizedCustomers,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -41,14 +56,38 @@ export const getAllCustomers = async (req, res) => {
 export const getCustomerById = async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id)
-      .populate('assignedTo', 'name email')
-      .populate('loanApplications');
+      .populate('assignedTo', 'name email');
 
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
     }
 
-    res.json(customer);
+    const loans = await LoanApplication.find({ customer: customer._id })
+      .populate('bank', 'name code')
+      .sort({ createdAt: -1 });
+
+    const tasks = await Task.find({ relatedCustomer: customer._id })
+      .populate('assignedTo', 'name email')
+      .sort({ dueDate: 1 });
+
+    const activeLoanCount = loans.filter(l =>
+      ['pending', 'submitted', 'approved'].includes(l.status)
+    ).length;
+    const approvedLoanCount = loans.filter(l =>
+      ['approved', 'disbursed', 'completed'].includes(l.status)
+    ).length;
+    const pendingLoanCount = loans.filter(l =>
+      ['pending', 'submitted'].includes(l.status)
+    ).length;
+
+    res.json({
+      ...customer.toObject(),
+      loans,
+      tasks,
+      activeLoanCount,
+      approvedLoanCount,
+      pendingLoanCount,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -56,7 +95,10 @@ export const getCustomerById = async (req, res) => {
 
 export const createCustomer = async (req, res) => {
   try {
-    const customer = new Customer(req.body);
+    const customer = new Customer({
+      ...req.body,
+      status: normalizeCustomerStatus(req.body.status),
+    });
     await customer.save();
 
     await ActivityLog.create({
@@ -78,9 +120,14 @@ export const createCustomer = async (req, res) => {
 
 export const updateCustomer = async (req, res) => {
   try {
+    const updates = { ...req.body, updatedAt: new Date() };
+    if (req.body.status !== undefined) {
+      updates.status = normalizeCustomerStatus(req.body.status);
+    }
+
     const customer = await Customer.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, updatedAt: new Date() },
+      updates,
       { new: true, runValidators: true }
     );
 

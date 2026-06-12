@@ -1,5 +1,18 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+/** Build query string — omits empty, null, and undefined params */
+const buildQueryString = (params = {}) => {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    const str = String(value).trim();
+    if (!str || str === 'all' || str.toLowerCase() === 'all status') return;
+    search.append(key, String(value));
+  });
+  const qs = search.toString();
+  return qs ? `?${qs}` : '';
+};
+
 const getHeaders = () => {
   const token = localStorage.getItem('token');
   return {
@@ -20,9 +33,33 @@ export const apiCall = async (endpoint, options = {}) => {
 
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.message || 'API Error');
+    const msg = data.message || data.errors?.join(', ') || 'API Error';
+    throw new Error(msg);
   }
   return data;
+};
+
+// User Service (admin employee management)
+export const userService = {
+  getTeam: () => apiCall('/users/team/list'),
+  getAll: (params = {}) => apiCall(`/users${buildQueryString(params)}`),
+  create: (data) =>
+    apiCall('/users', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  update: (id, data) =>
+    apiCall(`/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deactivate: (id) => apiCall(`/users/${id}/deactivate`, { method: 'POST' }),
+  activate: (id) => apiCall(`/users/${id}/activate`, { method: 'POST' }),
+  resetPassword: (id, password) =>
+    apiCall(`/users/${id}/reset-password`, {
+      method: 'POST',
+      body: JSON.stringify({ password }),
+    }),
 };
 
 // Auth Service
@@ -32,8 +69,8 @@ export const authService = {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
-  register: (name, email, password, phone) =>
-    apiCall('/auth/register', {
+  registerCustomer: (name, email, password, phone) =>
+    apiCall('/auth/register/customer', {
       method: 'POST',
       body: JSON.stringify({ name, email, password, phone }),
     }),
@@ -42,10 +79,7 @@ export const authService = {
 
 // Customer Service
 export const customerService = {
-  getAll: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return apiCall(`/customers?${query}`);
-  },
+  getAll: (params = {}) => apiCall(`/customers${buildQueryString(params)}`),
   getById: (id) => apiCall(`/customers/${id}`),
   create: (customer) =>
     apiCall('/customers', {
@@ -65,10 +99,7 @@ export const customerService = {
 
 // Loan Service
 export const loanService = {
-  getAll: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return apiCall(`/loans?${query}`);
-  },
+  getAll: (params = {}) => apiCall(`/loans${buildQueryString(params)}`),
   getById: (id) => apiCall(`/loans/${id}`),
   create: (loan) =>
     apiCall('/loans', {
@@ -90,6 +121,12 @@ export const loanService = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  updateStatus: (id, data) =>
+    apiCall(`/loans/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  getStatuses: () => apiCall('/loans/meta/statuses'),
 };
 
 // Bank Service
@@ -97,6 +134,7 @@ export const bankService = {
   getAll: () => apiCall('/banks'),
   getById: (id) => apiCall(`/banks/${id}`),
   getApprovals: (id) => apiCall(`/banks/${id}/approvals`),
+  getAnalytics: () => apiCall('/banks/analytics/summary'),
   create: (bank) =>
     apiCall('/banks', {
       method: 'POST',
@@ -115,10 +153,7 @@ export const bankService = {
 
 // Task Service
 export const taskService = {
-  getAll: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return apiCall(`/tasks?${query}`);
-  },
+  getAll: (params = {}) => apiCall(`/tasks${buildQueryString(params)}`),
   getById: (id) => apiCall(`/tasks/${id}`),
   create: (task) =>
     apiCall('/tasks', {
@@ -151,10 +186,7 @@ export const dashboardService = {
 
 // Call Service
 export const callService = {
-  getAll: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return apiCall(`/calls?${query}`);
-  },
+  getAll: (params = {}) => apiCall(`/calls${buildQueryString(params)}`),
   getById: (id) => apiCall(`/calls/${id}`),
   create: (call) =>
     apiCall('/calls', {
@@ -171,6 +203,57 @@ export const callService = {
       method: 'DELETE',
     }),
   getAnalytics: () => apiCall('/calls/analytics'),
+};
+
+// Customer Portal Service
+export const portalService = {
+  getDashboard: () => apiCall('/portal/dashboard'),
+  getProfile: () => apiCall('/portal/profile'),
+  updateProfile: (data) =>
+    apiCall('/portal/profile', { method: 'PUT', body: JSON.stringify(data) }),
+  getLoans: () => apiCall('/portal/loans'),
+  getLoanById: (id) => apiCall(`/portal/loans/${id}`),
+  getDocuments: () => apiCall('/portal/documents'),
+  getNotifications: () => apiCall('/portal/notifications'),
+  uploadDocument: async (docType, file) => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('docType', docType);
+    const response = await fetch(`${API_URL}/portal/documents/upload`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Upload failed');
+    return data;
+  },
+};
+
+// Lead Service
+const publicFetch = async (endpoint, options = {}) => {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...options.headers },
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || data.errors?.map((e) => e.msg).join('. ') || 'Request failed');
+  return data;
+};
+
+export const leadService = {
+  submit: (payload) =>
+    publicFetch('/leads/submit', { method: 'POST', body: JSON.stringify(payload) }),
+  getAll: (params = {}) => apiCall(`/leads${buildQueryString(params)}`),
+  getById: (id) => apiCall(`/leads/${id}`),
+  getStats: () => apiCall('/leads/stats'),
+  updateStatus: (id, data) =>
+    apiCall(`/leads/${id}/status`, { method: 'PATCH', body: JSON.stringify(data) }),
+  addNote: (id, remarks) =>
+    apiCall(`/leads/${id}/notes`, { method: 'POST', body: JSON.stringify({ remarks }) }),
+  convert: (id, data = {}) =>
+    apiCall(`/leads/${id}/convert`, { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // Settings Service

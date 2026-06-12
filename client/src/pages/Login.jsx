@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getHomePath } from '../utils/roles';
+import { Mail, ArrowRight, Loader2 } from 'lucide-react';
+import AuthLayout from '../components/auth/AuthLayout';
+import AuthInput from '../components/auth/AuthInput';
+import PasswordInput from '../components/auth/PasswordInput';
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -19,11 +24,11 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const success = await login(formData.email, formData.password);
-      if (success) {
-        navigate('/dashboard');
+      const result = await login(formData.email.trim(), formData.password);
+      if (result.user) {
+        navigate(getHomePath(result.user));
       } else {
-        setError('Invalid email or password');
+        setError(result.error || 'Invalid email or password');
       }
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -33,60 +38,71 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">FinCore CRM</h1>
-          <p className="text-gray-600 mt-2">Finance Direct Selling Management</p>
+    <AuthLayout title="Welcome back" subtitle="Sign in to your account to continue">
+      {error && (
+        <div className="mb-5 flex items-start gap-2 p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900/50 text-red-700 dark:text-red-300 text-sm rounded-xl">
+          <span className="flex-1">{error}</span>
         </div>
+      )}
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <AuthInput
+          label="Email"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="you@company.com"
+          icon={Mail}
+          autoComplete="email"
+        />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <PasswordInput
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Enter your password"
+          autoComplete="current-password"
+        />
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="group w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3.5 px-4 rounded-xl font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            <>
+              Sign in
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+            </>
+          )}
+        </button>
+      </form>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline font-semibold">
-            Register here
+      <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-700 text-center text-sm text-gray-600 dark:text-slate-400 space-y-2">
+        <p>
+          Don&apos;t have an account?{' '}
+          <Link to="/register" className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
+            Register
           </Link>
-        </div>
+        </p>
+        <p className="text-xs text-gray-500 dark:text-slate-400">
+          New here?{' '}
+          <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:underline">
+            Register as a customer
+          </Link>
+          . CRM staff: sign in with credentials from your administrator.
+        </p>
+        <p>
+          <Link to="/" className="text-xs text-gray-500 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400">
+            ← Back to public website
+          </Link>
+        </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

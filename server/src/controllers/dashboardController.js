@@ -3,6 +3,7 @@ import LoanApplication from '../models/LoanApplication.js';
 import Task from '../models/Task.js';
 import User from '../models/User.js';
 import ActivityLog from '../models/ActivityLog.js';
+import Lead from '../models/Lead.js';
 
 export const getDashboardStats = async (req, res) => {
   try {
@@ -17,6 +18,8 @@ export const getDashboardStats = async (req, res) => {
       completedTasks: await Task.countDocuments({ status: 'completed' }),
       totalUsers: await User.countDocuments(),
       activeUsers: await User.countDocuments({ isActive: true }),
+      totalLeads: await Lead.countDocuments(),
+      newLeads: await Lead.countDocuments({ status: 'new_lead' }),
     };
 
     const loanAmount = await LoanApplication.aggregate([

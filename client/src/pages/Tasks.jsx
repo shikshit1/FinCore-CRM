@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { taskService } from '../services/apiService';
+import { taskService, userService } from '../services/apiService';
+import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import Modal from '../components/ui/Modal';
 import { CheckCircle, Clock, AlertCircle, Plus, X } from 'lucide-react';
 
 export default function Tasks() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
+  const [teamUsers, setTeamUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -25,7 +29,23 @@ export default function Tasks() {
 
   useEffect(() => {
     fetchTasks();
+    fetchTeamUsers();
   }, []);
+
+  const fetchTeamUsers = async () => {
+    try {
+      const users = await userService.getTeam();
+      setTeamUsers(Array.isArray(users) ? users : []);
+      if (user?._id || user?.id) {
+        setFormData(prev => ({
+          ...prev,
+          assignedTo: prev.assignedTo || user._id || user.id,
+        }));
+      }
+    } catch (err) {
+      console.error('Error fetching team:', err);
+    }
+  };
 
   const fetchTasks = async () => {
     try {
@@ -97,7 +117,7 @@ export default function Tasks() {
       medium: 'bg-yellow-100 text-yellow-800',
       low: 'bg-blue-100 text-blue-800',
     };
-    return colors[priority] || 'bg-gray-100 text-gray-800';
+    return colors[priority] || 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200';
   };
 
   const getStatusIcon = (status) => {
@@ -109,7 +129,7 @@ export default function Tasks() {
   const filteredTasks = filter === 'all' ? tasks : tasks.filter(t => t.status === filter);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="fincore-page">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
@@ -117,8 +137,8 @@ export default function Tasks() {
           <div className="p-8">
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">Tasks</h1>
-                <p className="text-gray-500 mt-1">Manage your workflow and deadlines</p>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Tasks</h1>
+                <p className="text-gray-500 dark:text-slate-400 mt-1">Manage your workflow and deadlines</p>
               </div>
               <button
                 onClick={() => setShowForm(!showForm)}
@@ -130,28 +150,35 @@ export default function Tasks() {
 
             {/* Task Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-                <p className="text-gray-600 text-sm mb-2">Total Tasks</p>
-                <p className="text-3xl font-bold text-gray-900">{tasks.length}</p>
+              <div className="fincore-card p-6 border-l-4 border-blue-500">
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Total Tasks</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{tasks.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
-                <p className="text-gray-600 text-sm mb-2">Pending</p>
-                <p className="text-3xl font-bold text-gray-900">{tasks.filter(t => t.status === 'pending').length}</p>
+              <div className="fincore-card p-6 border-l-4 border-yellow-500">
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Pending</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{tasks.filter(t => t.status === 'pending').length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-                <p className="text-gray-600 text-sm mb-2">Completed</p>
-                <p className="text-3xl font-bold text-gray-900">{tasks.filter(t => t.status === 'completed').length}</p>
+              <div className="fincore-card p-6 border-l-4 border-green-500">
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Completed</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{tasks.filter(t => t.status === 'completed').length}</p>
               </div>
             </div>
 
-            {/* Add Task Form Modal */}
-            {showForm && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Task</h2>
+            <Modal
+              isOpen={showForm}
+              onClose={() => { setShowForm(false); setFormError(null); }}
+              title="Create New Task"
+              size="md"
+            >
+              {formError && (
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 rounded-lg text-sm">{formError}</div>
+                  )}
+                  {success && (
+                    <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">✓ {success}</div>
+                  )}
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                         Task Title
                       </label>
                       <input
@@ -159,31 +186,44 @@ export default function Tasks() {
                         required
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="e.g., Follow up with customer"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                         Description
                       </label>
                       <textarea
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Task details..."
                         rows="3"
                       ></textarea>
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Assigned To *</label>
+                      <select
+                        name="assignedTo"
+                        required
+                        value={formData.assignedTo}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">-- Select Team Member --</option>
+                        {teamUsers.map(u => (
+                          <option key={u._id} value={u._id}>{u.name} ({u.email})</option>
+                        ))}
+                      </select>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Priority
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Priority</label>
                         <select
                           value={formData.priority}
                           onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="low">Low</option>
                           <option value="medium">Medium</option>
@@ -191,36 +231,34 @@ export default function Tasks() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Due Date
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Due Date *</label>
                         <input
                           type="date"
+                          required
                           value={formData.dueDate}
                           onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
                     <div className="flex gap-3 pt-4">
                       <button
                         type="submit"
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium"
+                        disabled={formLoading}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg transition font-medium"
                       >
-                        Create Task
+                        {formLoading ? 'Creating...' : 'Create Task'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowForm(false)}
-                        className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg transition font-medium"
+                        className="flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 px-4 py-2 rounded-lg transition font-medium"
                       >
                         Cancel
                       </button>
                     </div>
                   </form>
-                </div>
-              </div>
-            )}
+            </Modal>
 
             {/* Filter */}
             <div className="mb-6">
@@ -237,7 +275,7 @@ export default function Tasks() {
                     className={`px-4 py-2 rounded-lg transition font-medium ${
                       filter === tab.id
                         ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
                     }`}
                   >
                     {tab.label}
@@ -247,25 +285,25 @@ export default function Tasks() {
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 rounded-lg">
                 {error}
               </div>
             )}
 
             {loading ? (
-              <div className="bg-white rounded-lg shadow p-8 text-center">
+              <div className="fincore-card p-8 text-center">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-4 text-gray-600">Loading tasks...</p>
+                <p className="mt-4 text-gray-600 dark:text-slate-400">Loading tasks...</p>
               </div>
             ) : filteredTasks.length === 0 ? (
-              <div className="bg-white rounded-lg shadow p-8 text-center">
+              <div className="fincore-card p-8 text-center">
                 <CheckCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 text-lg">No tasks found</p>
+                <p className="text-gray-600 dark:text-slate-400 text-lg">No tasks found</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {filteredTasks.map(task => (
-                  <div key={task._id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+                  <div key={task._id} className="fincore-card hover:shadow-lg transition p-6">
                     <div className="flex items-start gap-4">
                       <button
                         onClick={() => handleToggleTask(task._id, task.status === 'completed' ? 'pending' : 'completed')}
@@ -275,15 +313,15 @@ export default function Tasks() {
                       </button>
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className={`text-lg font-bold ${task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+                          <h3 className={`text-lg font-bold ${task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900 dark:text-slate-100'}`}>
                             {task.title}
                           </h3>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
                             {task.priority}
                           </span>
                         </div>
-                        <p className="text-gray-600 text-sm mb-3">{task.description}</p>
-                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <p className="text-gray-600 dark:text-slate-400 text-sm mb-3">{task.description}</p>
+                        <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400">
                           {task.dueDate && (
                             <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
                           )}

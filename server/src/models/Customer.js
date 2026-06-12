@@ -64,15 +64,30 @@ const customerSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'blacklisted'],
+    enum: ['active', 'inactive'],
     default: 'active',
   },
   notes: String,
+  userAccount: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
   documents: [
     {
-      type: String,
+      docType: {
+        type: String,
+        enum: ['aadhaar', 'pan', 'salary_slip', 'other'],
+        default: 'other',
+      },
+      fileName: String,
+      originalName: String,
       url: String,
-      uploadedAt: Date,
+      status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending',
+      },
+      uploadedAt: { type: Date, default: Date.now },
     },
   ],
   loanApplications: [
