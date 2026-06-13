@@ -4,8 +4,6 @@ import Reports from './pages/Reports';
 
 import Settings from './pages/Settings';
 
-import CallTracking from './pages/CallTracking';
-
 import CustomerDetails from './pages/CustomerDetails';
 
 
@@ -13,6 +11,7 @@ import CustomerDetails from './pages/CustomerDetails';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
+import { SidebarProvider } from './context/SidebarContext';
 
 import StaffProtectedRoute from './components/StaffProtectedRoute';
 
@@ -72,6 +71,8 @@ function App() {
 
       <AuthProvider>
 
+        <SidebarProvider>
+
         <Routes>
 
           {/* Public website */}
@@ -122,10 +123,6 @@ function App() {
 
           <Route path="/settings" element={<StaffProtectedRoute><Settings /></StaffProtectedRoute>} />
 
-          <Route path="/call-tracking" element={<StaffProtectedRoute><CallTracking /></StaffProtectedRoute>} />
-
-
-
           {/* Customer Portal */}
 
           <Route path="/customer/dashboard" element={<CustomerProtectedRoute><CustomerDashboard /></CustomerProtectedRoute>} />
@@ -145,6 +142,8 @@ function App() {
           <Route path="*" element={<HomeRedirect />} />
 
         </Routes>
+
+        </SidebarProvider>
 
       </AuthProvider>
 

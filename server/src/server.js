@@ -17,7 +17,6 @@ import bankRoutes from './routes/bankRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
-import callRoutes from './routes/callRoutes.js';
 import portalRoutes from './routes/portalRoutes.js';
 import leadRoutes from './routes/leadRoutes.js';
 
@@ -51,7 +50,6 @@ app.use('/api/banks', bankRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/settings', settingsRoutes);
-app.use('/api/calls', callRoutes);
 app.use('/api/portal', portalRoutes);
 app.use('/api/leads', leadRoutes);
 
@@ -65,9 +63,9 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`\n✅ FinCore CRM Server running on port ${PORT}`);
-  console.log(`📡 API: http://localhost:${PORT}/api`);
-  console.log(`🏥 Health check: http://localhost:${PORT}/api/health\n`);
+  console.log(`\n FinCore CRM Server running on port ${PORT}`);
+  console.log(` API: http://localhost:${PORT}/api`);
+  console.log(` Health check: http://localhost:${PORT}/api/health\n`);
 });
 
 export default app;

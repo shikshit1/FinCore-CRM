@@ -119,18 +119,18 @@ export default function Customers() {
   return (
     <div className="fincore-page">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="fincore-main">
         <Header />
         <main className="flex-1 overflow-auto">
-          <div className="p-8">
-            <div className="flex justify-between items-center mb-8">
+          <div className="fincore-content">
+            <div className="fincore-page-header">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Customers</h1>
-                <p className="text-gray-500 dark:text-slate-400 mt-1">Manage and track all customer information</p>
+                <h1 className="fincore-page-title">Customers</h1>
+                <p className="fincore-page-subtitle">Manage and track all customer information</p>
               </div>
               <button
                 onClick={() => setShowForm(!showForm)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 font-medium flex items-center gap-2 shadow-md"
+                className="fincore-btn-action"
               >
                 <Plus size={20} /> Add Customer
               </button>
@@ -162,7 +162,7 @@ export default function Customers() {
               size="xl"
             >
               <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           First Name *
@@ -193,7 +193,7 @@ export default function Customers() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           Email *
@@ -238,7 +238,7 @@ export default function Customers() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                           City
@@ -295,18 +295,18 @@ export default function Customers() {
                       </select>
                     </div>
 
-                    <div className="flex gap-3 pt-6 border-t">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
                       <button
                         type="submit"
                         disabled={formLoading}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition font-medium disabled:bg-blue-400"
+                        className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition font-medium disabled:bg-blue-400"
                       >
                         {formLoading ? 'Saving...' : 'Save Customer'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowForm(false)}
-                        className="flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 px-6 py-2 rounded-lg transition font-medium"
+                        className="w-full sm:flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 px-6 py-2 rounded-lg transition font-medium"
                       >
                         Cancel
                       </button>
@@ -342,8 +342,9 @@ export default function Customers() {
                 <p className="text-gray-400 mt-2">Add your first customer to get started</p>
               </div>
             ) : (
-              <div className="fincore-card overflow-hidden">
-                <table className="w-full">
+              <div className="fincore-table-wrap">
+                <div className="fincore-table-scroll">
+                <table className="w-full min-w-[640px]">
                   <thead className="bg-gray-50 dark:bg-slate-800/80 border-b dark:border-slate-700">
                     <tr>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Name</th>
@@ -378,6 +379,7 @@ export default function Customers() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </div>

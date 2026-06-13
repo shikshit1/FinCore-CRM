@@ -151,18 +151,18 @@ export default function Banks() {
   return (
     <div className="fincore-page">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="fincore-main">
         <Header />
         <main className="flex-1 overflow-auto">
-          <div className="p-6 lg:p-8">
-            <div className="flex justify-between items-center mb-6">
+          <div className="fincore-content">
+            <div className="fincore-page-header">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">Banks</h1>
-                <p className="text-gray-500 dark:text-slate-400 mt-1">Partner banks & loan analytics</p>
+                <h1 className="fincore-page-title">Banks</h1>
+                <p className="fincore-page-subtitle">Partner banks & loan analytics</p>
               </div>
               <button
                 onClick={() => { setShowForm(true); setFormError(null); }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition font-medium shadow-md flex items-center gap-2"
+                className="fincore-btn-action"
               >
                 <Plus size={18} /> Add Bank
               </button>
@@ -182,7 +182,7 @@ export default function Banks() {
             )}
 
             {/* Overall Analytics */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
               <div className="fincore-card-sm p-4 border border-gray-100 hover:shadow-md transition">
                 <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Total Loans</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{totals.totalLoans}</p>
@@ -220,7 +220,8 @@ export default function Banks() {
                   {formError}
                 </div>
               )}
-              <form onSubmit={handleAddBank} className="space-y-3">
+              <form onSubmit={handleAddBank} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Bank Name *</label>
                   <input type="text" name="name" required value={formData.name} onChange={handleInputChange} className="fincore-input" placeholder="HDFC Bank" />
@@ -237,15 +238,16 @@ export default function Banks() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Contact Person</label>
                   <input type="text" name="contactPerson" value={formData.contactPerson} onChange={handleInputChange} className="fincore-input" />
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Phone</label>
                   <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="fincore-input" />
                 </div>
-                <div className="flex gap-3 pt-3">
-                  <button type="submit" disabled={formLoading} className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white py-2.5 rounded-lg font-medium">
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 pt-3">
+                  <button type="submit" disabled={formLoading} className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white py-2.5 rounded-lg font-medium">
                     {formLoading ? 'Saving...' : 'Save Bank'}
                   </button>
-                  <button type="button" onClick={() => { setShowForm(false); setFormError(null); }} className="flex-1 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800">
+                  <button type="button" onClick={() => { setShowForm(false); setFormError(null); }} className="w-full sm:flex-1 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800">
                     Cancel
                   </button>
                 </div>
@@ -260,7 +262,7 @@ export default function Banks() {
               size="2xl"
               bodyClassName="!p-0"
             >
-              <div className="overflow-auto max-h-[min(60vh,32rem)]">
+              <div className="overflow-x-auto max-h-[min(60vh,32rem)]">
                 {loansLoading ? (
                   <div className="text-center py-12">
                     <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
@@ -268,7 +270,7 @@ export default function Banks() {
                 ) : bankLoans.length === 0 ? (
                   <p className="text-center text-gray-500 dark:text-slate-400 py-12 px-6">No loans linked to this bank yet.</p>
                 ) : (
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm min-w-[560px]">
                     <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                       <tr>
                         <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-slate-300">Customer</th>

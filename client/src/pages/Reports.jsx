@@ -57,13 +57,13 @@ export default function Reports() {
   return (
     <div className="fincore-page">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="fincore-main">
         <Header />
         <main className="flex-1 overflow-auto">
-          <div className="p-8">
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Reports & Analytics</h1>
-              <p className="text-gray-500 dark:text-slate-400 mt-1">Business performance and key metrics</p>
+          <div className="fincore-content">
+            <div className="mb-6 sm:mb-8">
+              <h1 className="fincore-page-title">Reports & Analytics</h1>
+              <p className="fincore-page-subtitle">Business performance and key metrics</p>
             </div>
 
             {loading ? (
@@ -74,7 +74,7 @@ export default function Reports() {
             ) : (
               <>
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                   {reportCards.map((card, index) => {
                     const Icon = card.icon;
                     return (
@@ -93,7 +93,7 @@ export default function Reports() {
                 </div>
 
                 {/* Charts Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                   {/* Loan Status Distribution */}
                   <div className="fincore-card p-6">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 mb-6">Loan Status Distribution</h3>
@@ -151,7 +151,7 @@ export default function Reports() {
                 </div>
 
                 {/* Summary Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   <div className="fincore-card p-6">
                     <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Avg Loan Amount</p>
                     <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">₹3.5L</p>

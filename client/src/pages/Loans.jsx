@@ -122,18 +122,18 @@ export default function Loans() {
   return (
     <div className="fincore-page">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="fincore-main">
         <Header />
         <main className="flex-1 overflow-auto">
-          <div className="p-8">
-            <div className="flex justify-between items-center mb-8">
+          <div className="fincore-content">
+            <div className="fincore-page-header">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Loan Applications</h1>
-                <p className="text-gray-500 dark:text-slate-400 mt-1">Track and manage all loan applications</p>
+                <h1 className="fincore-page-title">Loan Applications</h1>
+                <p className="fincore-page-subtitle">Track and manage all loan applications</p>
               </div>
               <button
                 onClick={() => setShowForm(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 font-medium shadow-md flex items-center gap-2"
+                className="fincore-btn-action"
               >
                 <Plus size={20} /> New Application
               </button>
@@ -259,18 +259,18 @@ export default function Loans() {
                       ></textarea>
                     </div>
 
-                    <div className="flex gap-3 pt-6 border-t">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
                       <button
                         type="submit"
                         disabled={formLoading}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg transition font-medium"
+                        className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg transition font-medium"
                       >
                         {formLoading ? 'Creating...' : 'Create Application'}
                       </button>
                       <button
                         type="button"
                         onClick={() => { setShowForm(false); setFormError(null); }}
-                        className="flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 px-4 py-2 rounded-lg transition font-medium"
+                        className="w-full sm:flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 px-4 py-2 rounded-lg transition font-medium"
                       >
                         Cancel
                       </button>
@@ -288,7 +288,7 @@ export default function Loans() {
             )}
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
               <div className="fincore-card-sm p-4 border-l-4 border-yellow-500">
                 <p className="text-gray-500 dark:text-slate-400 text-xs mb-1">In Pipeline</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{pendingCount}</p>
@@ -315,11 +315,11 @@ export default function Loans() {
             </div>
 
             {/* Filter */}
-            <div className="mb-6 flex gap-4">
+            <div className="mb-6">
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All Status</option>
                 {LOAN_STATUS_OPTIONS.map(opt => (
@@ -352,15 +352,16 @@ export default function Loans() {
                   <button
                     type="button"
                     onClick={() => setFilter('')}
-                    className="mt-4 text-sm font-medium text-blue-600 hover:text-blue-800"
+                    className="mt-4 w-full sm:w-auto text-sm font-medium text-blue-600 hover:text-blue-800"
                   >
                     Clear filter
                   </button>
                 )}
               </div>
             ) : (
-              <div className="fincore-card overflow-hidden">
-                <table className="w-full">
+              <div className="fincore-table-wrap">
+                <div className="fincore-table-scroll">
+                <table className="w-full min-w-[720px]">
                   <thead className="bg-gray-50 dark:bg-slate-800/80 border-b dark:border-slate-700">
                     <tr>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-slate-300">Customer</th>
@@ -403,6 +404,7 @@ export default function Loans() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </div>

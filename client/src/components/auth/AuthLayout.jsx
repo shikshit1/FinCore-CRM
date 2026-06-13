@@ -42,7 +42,7 @@ export default function AuthLayout({ children, title, subtitle }) {
             </div>
 
             <p className="text-blue-100/80 text-base lg:text-lg leading-relaxed mb-8 hidden sm:block">
-              Streamline loans, customers, banks, and telecaller operations in one powerful finance CRM platform.
+              Streamline loans, customers, banks, and team operations in one powerful finance CRM platform.
             </p>
 
             <div className="space-y-4 hidden md:block">

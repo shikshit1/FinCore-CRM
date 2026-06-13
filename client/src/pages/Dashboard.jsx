@@ -36,9 +36,9 @@ export default function Dashboard() {
     return (
       <div className="fincore-page">
         <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <div className="flex-1 flex items-center justify-center">
+      <div className="fincore-main">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
               <p className="text-gray-600 dark:text-slate-400 text-lg">Loading dashboard...</p>
@@ -52,14 +52,13 @@ export default function Dashboard() {
   return (
     <div className="fincore-page">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="fincore-main">
         <Header />
         <main className="flex-1 overflow-auto">
-          <div className="p-8">
-            {/* Page Header */}
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Dashboard</h1>
-              <p className="text-gray-500 dark:text-slate-400 mt-1">Welcome back! Here's your business overview.</p>
+          <div className="fincore-content">
+            <div className="mb-6 sm:mb-8">
+              <h1 className="fincore-page-title">Dashboard</h1>
+              <p className="fincore-page-subtitle">Welcome back! Here's your business overview.</p>
             </div>
 
             {error && (
@@ -69,7 +68,7 @@ export default function Dashboard() {
             )}
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
               {stats && (
                 <>
                   <div className="fincore-card hover:shadow-lg transition p-6">
@@ -143,7 +142,7 @@ export default function Dashboard() {
             </div>
 
             {/* Charts and Breakdown */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
               {/* Loans by Status */}
               <div className="fincore-card p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-6">Loan Status Distribution</h2>
@@ -219,7 +218,7 @@ export default function Dashboard() {
             </div>
 
             {/* Recent Activity / Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="fincore-card p-6">
                 <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Monthly Active Customers</p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{Math.floor((stats?.activeCustomers || 0) * 0.8)}</p>

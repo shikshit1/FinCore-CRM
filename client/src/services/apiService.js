@@ -184,27 +184,6 @@ export const dashboardService = {
   getMyDashboard: () => apiCall('/dashboard/my-dashboard'),
 };
 
-// Call Service
-export const callService = {
-  getAll: (params = {}) => apiCall(`/calls${buildQueryString(params)}`),
-  getById: (id) => apiCall(`/calls/${id}`),
-  create: (call) =>
-    apiCall('/calls', {
-      method: 'POST',
-      body: JSON.stringify(call),
-    }),
-  update: (id, call) =>
-    apiCall(`/calls/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(call),
-    }),
-  delete: (id) =>
-    apiCall(`/calls/${id}`, {
-      method: 'DELETE',
-    }),
-  getAnalytics: () => apiCall('/calls/analytics'),
-};
-
 // Customer Portal Service
 export const portalService = {
   getDashboard: () => apiCall('/portal/dashboard'),

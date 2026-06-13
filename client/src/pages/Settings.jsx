@@ -114,9 +114,9 @@ export default function Settings() {
     return (
       <div className="fincore-page">
         <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <div className="flex-1 flex items-center justify-center">
+      <div className="fincore-main">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
             <p className="text-gray-600 dark:text-slate-400">Loading settings...</p>
           </div>
         </div>
@@ -127,13 +127,13 @@ export default function Settings() {
   return (
     <div className="fincore-page">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="fincore-main">
         <Header />
         <main className="flex-1 overflow-auto">
-          <div className="p-6 lg:p-8">
+          <div className="fincore-content">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">Settings</h1>
-              <p className="text-gray-500 dark:text-slate-400 mt-1">Manage your account preferences</p>
+              <h1 className="fincore-page-title">Settings</h1>
+              <p className="fincore-page-subtitle">Manage your account preferences</p>
             </div>
 
             {saved && (
@@ -145,16 +145,16 @@ export default function Settings() {
               <div className="mb-4 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 rounded-lg">{saveError}</div>
             )}
 
-            <div className="flex flex-col lg:flex-row gap-6">
-              <div className="lg:w-56">
-                <div className="fincore-card p-3 space-y-1 sticky top-8">
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+              <div className="lg:w-56 flex-shrink-0">
+                <div className="fincore-card p-2 sm:p-3 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:space-y-1 lg:sticky lg:top-8">
                   {tabs.map(tab => {
                     const Icon = tab.icon;
                     return (
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-sm ${
+                        className={`flex-shrink-0 lg:w-full flex items-center gap-2 sm:gap-3 px-3 py-2.5 rounded-lg transition text-sm whitespace-nowrap ${
                           activeTab === tab.id
                             ? 'bg-blue-50 text-blue-600 font-medium'
                             : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50'
@@ -172,9 +172,9 @@ export default function Settings() {
                 {activeTab === 'profile' && (
                   <div className="fincore-card p-6">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-5">Profile Settings</h2>
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {['fullName', 'email', 'phone', 'company'].map(field => (
-                        <div key={field}>
+                        <div key={field} className={field === 'company' ? 'md:col-span-2' : ''}>
                           <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 capitalize">
                             {field === 'fullName' ? 'Full Name' : field === 'email' ? 'Email Address' : field === 'phone' ? 'Phone Number' : 'Company Name'}
                           </label>
@@ -186,10 +186,10 @@ export default function Settings() {
                           />
                         </div>
                       ))}
-                      <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                        Save Changes
-                      </button>
                     </div>
+                    <button onClick={handleSave} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium mt-4">
+                      Save Changes
+                    </button>
                   </div>
                 )}
 
@@ -216,7 +216,7 @@ export default function Settings() {
                           </div>
                         </label>
                       ))}
-                      <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium mt-2">
+                      <button onClick={handleSave} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium mt-2">
                         Save Preferences
                       </button>
                     </div>
@@ -248,7 +248,7 @@ export default function Settings() {
                         <option value="team">Team — Visible to your team</option>
                         <option value="public">Public — Visible to everyone</option>
                       </select>
-                      <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+                      <button onClick={handleSave} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
                         Save Security Settings
                       </button>
                     </div>

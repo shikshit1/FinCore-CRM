@@ -131,25 +131,25 @@ export default function Tasks() {
   return (
     <div className="fincore-page">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="fincore-main">
         <Header />
         <main className="flex-1 overflow-auto">
-          <div className="p-8">
-            <div className="flex justify-between items-center mb-8">
+          <div className="fincore-content">
+            <div className="fincore-page-header">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100">Tasks</h1>
-                <p className="text-gray-500 dark:text-slate-400 mt-1">Manage your workflow and deadlines</p>
+                <h1 className="fincore-page-title">Tasks</h1>
+                <p className="fincore-page-subtitle">Manage your workflow and deadlines</p>
               </div>
               <button
                 onClick={() => setShowForm(!showForm)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 font-medium flex items-center gap-2 shadow-md"
+                className="fincore-btn-action"
               >
                 <Plus size={20} /> New Task
               </button>
             </div>
 
             {/* Task Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
               <div className="fincore-card p-6 border-l-4 border-blue-500">
                 <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Total Tasks</p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">{tasks.length}</p>
@@ -217,7 +217,7 @@ export default function Tasks() {
                         ))}
                       </select>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Priority</label>
                         <select
@@ -241,18 +241,18 @@ export default function Tasks() {
                         />
                       </div>
                     </div>
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
                       <button
                         type="submit"
                         disabled={formLoading}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg transition font-medium"
+                        className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg transition font-medium"
                       >
                         {formLoading ? 'Creating...' : 'Create Task'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowForm(false)}
-                        className="flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 px-4 py-2 rounded-lg transition font-medium"
+                        className="w-full sm:flex-1 border border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 px-4 py-2 rounded-lg transition font-medium"
                       >
                         Cancel
                       </button>
@@ -261,8 +261,8 @@ export default function Tasks() {
             </Modal>
 
             {/* Filter */}
-            <div className="mb-6">
-              <div className="flex gap-2">
+            <div className="mb-6 overflow-x-auto -mx-1 px-1">
+              <div className="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
                 {[
                   { id: 'all', label: 'All Tasks' },
                   { id: 'pending', label: 'Pending' },
@@ -272,7 +272,7 @@ export default function Tasks() {
                   <button
                     key={tab.id}
                     onClick={() => setFilter(tab.id)}
-                    className={`px-4 py-2 rounded-lg transition font-medium ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg transition font-medium text-sm whitespace-nowrap ${
                       filter === tab.id
                         ? 'bg-blue-600 text-white'
                         : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
@@ -303,20 +303,20 @@ export default function Tasks() {
             ) : (
               <div className="space-y-4">
                 {filteredTasks.map(task => (
-                  <div key={task._id} className="fincore-card hover:shadow-lg transition p-6">
-                    <div className="flex items-start gap-4">
+                  <div key={task._id} className="fincore-card hover:shadow-lg transition p-4 sm:p-6">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       <button
                         onClick={() => handleToggleTask(task._id, task.status === 'completed' ? 'pending' : 'completed')}
                         className="mt-1 flex-shrink-0"
                       >
                         {getStatusIcon(task.status)}
                       </button>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className={`text-lg font-bold ${task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900 dark:text-slate-100'}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                          <h3 className={`text-base sm:text-lg font-bold ${task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900 dark:text-slate-100'}`}>
                             {task.title}
                           </h3>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
+                          <span className={`self-start px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
                             {task.priority}
                           </span>
                         </div>
