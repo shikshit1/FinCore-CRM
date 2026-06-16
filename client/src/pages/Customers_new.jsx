@@ -175,7 +175,7 @@ export default function Customers() {
                       <input
                         type="text"
                         name="firstName"
-                        placeholder="First Name"
+                        placeholder="Enter first name"
                         value={formData.firstName}
                         onChange={handleInputChange}
                         className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -183,7 +183,7 @@ export default function Customers() {
                       <input
                         type="text"
                         name="lastName"
-                        placeholder="Last Name"
+                        placeholder="Enter last name"
                         value={formData.lastName}
                         onChange={handleInputChange}
                         className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -193,7 +193,7 @@ export default function Customers() {
                     <input
                       type="email"
                       name="email"
-                      placeholder="Email Address"
+                      placeholder="Enter email address"
                       value={formData.email}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -202,7 +202,7 @@ export default function Customers() {
                     <input
                       type="tel"
                       name="phone"
-                      placeholder="Phone Number"
+                      placeholder="Enter phone number"
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

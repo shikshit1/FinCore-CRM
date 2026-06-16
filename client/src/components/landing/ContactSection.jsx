@@ -11,8 +11,8 @@ export default function ContactSection() {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { icon: Mail, label: 'Email', value: 'support@fincore.com', href: 'mailto:support@fincore.com' },
-            { icon: Phone, label: 'Phone', value: '+91 1800-XXX-XXXX', href: 'tel:+911800000000' },
+            { icon: Mail, label: 'Email', value: 'support@company.com', href: 'mailto:support@company.com' },
+            { icon: Phone, label: 'Phone', value: '+91 XXX XXX XXXX', href: 'tel:+911800000000' },
             { icon: MapPin, label: 'Office', value: 'Bandra Kurla Complex, Mumbai', href: null },
             { icon: Clock, label: 'Hours', value: 'Mon–Sat, 9 AM – 7 PM IST', href: null },
           ].map(({ icon: Icon, label, value, href }) => (

@@ -224,15 +224,15 @@ export default function Banks() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Bank Name *</label>
-                  <input type="text" name="name" required value={formData.name} onChange={handleInputChange} className="fincore-input" placeholder="HDFC Bank" />
+                  <input type="text" name="name" required value={formData.name} onChange={handleInputChange} className="fincore-input" placeholder="Enter bank name" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Bank Code</label>
-                  <input type="text" name="code" value={formData.code} onChange={handleInputChange} className="fincore-input" placeholder="HDFC001" />
+                  <input type="text" name="code" value={formData.code} onChange={handleInputChange} className="fincore-input" placeholder="Enter bank code" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email *</label>
-                  <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="fincore-input" placeholder="contact@bank.com" />
+                  <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="fincore-input" placeholder="Enter contact email" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Contact Person</label>

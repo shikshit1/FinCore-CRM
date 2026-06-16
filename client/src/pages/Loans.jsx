@@ -205,7 +205,7 @@ export default function Loans() {
                         value={formData.loanAmount}
                         onChange={handleInputChange}
                         className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="500000"
+                        placeholder="Enter loan amount"
                       />
                     </div>
 
@@ -254,7 +254,7 @@ export default function Loans() {
                         value={formData.purpose}
                         onChange={handleInputChange}
                         className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Loan purpose..."
+                        placeholder="Enter loan purpose (optional)"
                         rows="2"
                       ></textarea>
                     </div>

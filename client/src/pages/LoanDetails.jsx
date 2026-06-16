@@ -224,7 +224,7 @@ export default function LoanDetails() {
                           value={statusForm.rejectionReason}
                           onChange={e => setStatusForm({ ...statusForm, rejectionReason: e.target.value })}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none"
-                          placeholder="Reason from bank..."
+                          placeholder="Enter reason or remarks"
                         />
                       </div>
                     )}
@@ -236,7 +236,7 @@ export default function LoanDetails() {
                         onChange={e => setStatusForm({ ...statusForm, remarks: e.target.value })}
                         rows={2}
                         className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="Bank response details, internal notes..."
+                        placeholder="Enter internal notes"
                       />
                     </div>
 

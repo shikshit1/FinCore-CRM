@@ -52,7 +52,7 @@ export default function Login() {
           type="email"
           value={formData.email}
           onChange={handleChange}
-          placeholder="you@company.com"
+          placeholder="Enter your email address"
           icon={Mail}
           autoComplete="email"
         />

@@ -187,7 +187,7 @@ export default function Tasks() {
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="e.g., Follow up with customer"
+                        placeholder="Enter task title"
                       />
                     </div>
                     <div>
@@ -198,7 +198,7 @@ export default function Tasks() {
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Task details..."
+                        placeholder="Enter task details (optional)"
                         rows="3"
                       ></textarea>
                     </div>

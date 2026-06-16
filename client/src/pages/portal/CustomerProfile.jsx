@@ -70,9 +70,9 @@ export default function CustomerProfile() {
             <input value={form.street} onChange={e => setForm({ ...form, street: e.target.value })} className="w-full border rounded-lg px-3 py-2" />
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
-            <input placeholder="City" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className="border rounded-lg px-3 py-2" />
-            <input placeholder="State" value={form.state} onChange={e => setForm({ ...form, state: e.target.value })} className="border rounded-lg px-3 py-2" />
-            <input placeholder="Pincode" value={form.pincode} onChange={e => setForm({ ...form, pincode: e.target.value })} className="border rounded-lg px-3 py-2" />
+            <input placeholder="Enter city" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className="border rounded-lg px-3 py-2" />
+            <input placeholder="Enter state" value={form.state} onChange={e => setForm({ ...form, state: e.target.value })} className="border rounded-lg px-3 py-2" />
+            <input placeholder="Enter postal code" value={form.pincode} onChange={e => setForm({ ...form, pincode: e.target.value })} className="border rounded-lg px-3 py-2" />
           </div>
           <button type="submit" disabled={saving} className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50">
             {saving ? 'Saving...' : 'Save Changes'}

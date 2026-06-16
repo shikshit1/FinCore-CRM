@@ -174,7 +174,7 @@ export default function Customers() {
                           value={formData.firstName}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="first name"
+                          placeholder="Enter first name"
                         />
                       </div>
                       <div>
@@ -188,7 +188,7 @@ export default function Customers() {
                           value={formData.lastName}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="last name"
+                          placeholder="Enter last name"
                         />
                       </div>
                     </div>
@@ -205,7 +205,7 @@ export default function Customers() {
                           value={formData.email}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="email"
+                          placeholder="Enter email address"
                         />
                       </div>
                       <div>
@@ -219,7 +219,7 @@ export default function Customers() {
                           value={formData.phone}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="phone"
+                          placeholder="Enter phone number"
                         />
                       </div>
                     </div>
@@ -234,7 +234,7 @@ export default function Customers() {
                         value={formData.address}
                         onChange={handleInputChange}
                         className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="123 Main Street"
+                        placeholder="Enter street address"
                       />
                     </div>
 
@@ -249,7 +249,7 @@ export default function Customers() {
                           value={formData.city}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Mumbai"
+                          placeholder="Enter city"
                         />
                       </div>
                       <div>
@@ -262,7 +262,7 @@ export default function Customers() {
                           value={formData.state}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Maharashtra"
+                          placeholder="Enter state"
                         />
                       </div>
                       <div>
@@ -275,7 +275,7 @@ export default function Customers() {
                           value={formData.pincode}
                           onChange={handleInputChange}
                           className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="400001"
+                          placeholder="Enter postal code"
                         />
                       </div>
                     </div>

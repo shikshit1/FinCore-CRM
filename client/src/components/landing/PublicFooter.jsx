@@ -78,9 +78,9 @@ export default function PublicFooter() {
 
             <ul className="space-y-3 text-sm">
 
-              <li className="flex items-center gap-2"><Mail size={16} className="text-blue-400" /> support@fincore.com</li>
+              <li className="flex items-center gap-2"><Mail size={16} className="text-blue-400" /> support@company.com</li>
 
-              <li className="flex items-center gap-2"><Phone size={16} className="text-blue-400" /> +91 1800-XXX-XXXX</li>
+              <li className="flex items-center gap-2"><Phone size={16} className="text-blue-400" /> +91 XXX XXX XXXX</li>
 
               <li className="flex items-center gap-2"><MapPin size={16} className="text-blue-400" /> Mumbai, India</li>
 

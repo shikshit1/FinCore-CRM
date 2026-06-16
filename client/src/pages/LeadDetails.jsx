@@ -217,7 +217,7 @@ export default function LeadDetails() {
                       value={convertForm.purpose}
                       onChange={(e) => setConvertForm({ ...convertForm, purpose: e.target.value })}
                       className="fincore-input mt-1"
-                      placeholder="Loan purpose"
+                      placeholder="Enter loan purpose"
                     />
                   </div>
                 </div>
@@ -255,7 +255,7 @@ export default function LeadDetails() {
               </h2>
               {!isConverted && (
                 <form onSubmit={handleAddNote} className="flex gap-2 mb-4">
-                  <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add employee note..." className="fincore-input flex-1" />
+                  <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add employee note (optional)" className="fincore-input flex-1" />
                   <button type="submit" className="px-4 bg-gray-800 dark:bg-slate-700 text-white rounded-lg text-sm">Add</button>
                 </form>
               )}

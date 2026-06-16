@@ -45,7 +45,7 @@ export default function LeadInterestForm({
             value={form.phone}
             onChange={handleChange}
             className="fincore-input"
-            placeholder="9876543210"
+            placeholder="Enter your phone number"
           />
         </div>
         <div>
@@ -109,7 +109,7 @@ export default function LeadInterestForm({
           value={form.notes}
           onChange={handleChange}
           className="fincore-input"
-          placeholder="Any additional information..."
+          placeholder="Add any additional information (optional)"
         />
       </div>
 

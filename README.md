@@ -43,7 +43,7 @@ A full-stack CRM application built with React, Express.js, and MongoDB for manag
 
 ## 📁 Project Structure
 
-```
+```text
 fincore-crm/
 ├── client/                 # React frontend
 │   ├── src/

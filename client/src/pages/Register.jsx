@@ -132,9 +132,9 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        <AuthInput label="Full Name" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" icon={User} required />
+        <AuthInput label="Full Name" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your full name" icon={User} required />
 
-        <AuthInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@email.com" icon={Mail} required />
+        <AuthInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Enter your email address" icon={Mail} required />
 
         <AuthInput
 
@@ -148,7 +148,7 @@ export default function Register() {
 
           onChange={handleChange}
 
-          placeholder="9876543210"
+          placeholder="Enter your phone number"
 
           icon={Phone}
 
@@ -156,7 +156,7 @@ export default function Register() {
 
         />
 
-        <PasswordInput value={formData.password} onChange={handleChange} placeholder="Create a strong password" autoComplete="new-password" />
+        <PasswordInput value={formData.password} onChange={handleChange} placeholder="Create a password" autoComplete="new-password" />
 
 
 

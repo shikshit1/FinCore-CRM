@@ -376,13 +376,13 @@ export default function Employees() {
                   name="password"
                   value={formData.password}
                   onChange={handleFormChange}
-                  placeholder="Min. 6 characters"
+                  placeholder="Create a password"
                   autoComplete="new-password"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Phone</label>
-                <input name="phone" type="tel" value={formData.phone} onChange={handleFormChange} className="fincore-input" placeholder="9876543210" />
+                <input name="phone" type="tel" value={formData.phone} onChange={handleFormChange} className="fincore-input" placeholder="Enter phone number" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Role *</label>
@@ -424,7 +424,7 @@ export default function Employees() {
                 name="newPassword"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Min. 6 characters"
+                placeholder="Create a new password"
                 autoComplete="new-password"
               />
               <div className="flex gap-3">

@@ -222,7 +222,7 @@ export default function Home() {
 
                 <div className="flex items-center justify-between mb-4">
 
-                  <span className="text-sm font-medium text-gray-500 dark:text-slate-400">Sample EMI</span>
+                  <span className="text-sm font-medium text-gray-500 dark:text-slate-400">Estimated EMI</span>
 
                   <span className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400">
 
