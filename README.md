@@ -138,12 +138,12 @@ This will start both the Express server (port 5000) and React dev server (port 5
 ## 🚀 Deployment
 
 ### Backend
-- Deploy to Heroku or Railway
+- Deploy to render
 - Set MongoDB Atlas connection string in environment
 - Configure CORS for frontend domain
 
 ### Frontend
-- Deploy to Vercel
+- Deploy to render
 - Set API URL to backend deployment
 - Enable automatic deployments from main branch
 
